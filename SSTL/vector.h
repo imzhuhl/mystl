@@ -10,12 +10,14 @@
 #include <algorithm>
 
 #include "allocator.h"
+#include "utils.h"
 
 namespace sstl{
 
     template <typename T>
     class vector {
     public:
+        typedef sstl::allocator<T>                      data_allocator;
         typedef T                                       value_type;
         typedef T*                                      pointer;
         typedef const T*                                const_pointer;
@@ -78,9 +80,18 @@ namespace sstl{
 
         // 插入删除
         void push_back(const T& value) {
-
+            if (end_ != cap_) {
+                data_allocator::construct(sstl::address_of(*end_), value);
+                ++end_;
+            } else {
+                reallocate_insert(end_, value);
+            }
         }
-        void pop();
+        void pop_back() {
+            assert(!empty());
+            data_allocator::destroy(end_-1);
+            --end_;
+        }
 
         /*********helper function*********/
         void init_space(size_type n, size_type cap) {
@@ -94,16 +105,48 @@ namespace sstl{
                 cap_ = nullptr;
             }
         }
+
         void fill_n(T* first, size_t n, T value) {
             for (; n > 0; --n, ++first) {
                 *first = value;
             }
         }
+
         void destroy_and_recover(T* first, T* last, size_t n) {
             sstl::destroy(first, last);
             if (first != nullptr) {
                 ::operator delete(first);
             }
+        }
+
+        // 重新分配空间并在 pos 处插入元素
+        void reallocate_insert(iterator pos, const value_type& value) {
+            const size_type new_size = get_new_cap(1);
+            iterator new_begin = data_allocator::allocate(new_size);
+            iterator new_end = new_begin;
+            new_end = init_move(begin_, pos, new_begin);
+            sstl::construct(sstl::address_of(*new_end), value);
+            ++new_end;
+            new_end = init_move(pos, end_, new_end);
+
+            //
+            destroy_and_recover(begin_, end_, cap_-begin_);
+            begin_ = new_begin;
+            end_ = new_end;
+            cap_ = new_begin + new_size;
+
+        }
+
+        size_type get_new_cap(size_type add_size) {
+            const size_type old_size = capacity();
+            return std::max(old_size + old_size / 2, old_size+add_size);
+        }
+
+        iterator init_move(iterator first, iterator last, iterator result) {
+            for (; first != last; ++first, ++result) {
+                sstl::construct(&(*result), *first);
+            }
+            return result;
         }
 
 
