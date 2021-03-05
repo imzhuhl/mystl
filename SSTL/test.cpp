@@ -8,10 +8,14 @@
 
 void test_vector() {
     sstl::vector<int> v1;
-    sstl::vector<int> v2(10, 1);
+    sstl::vector<int> v2(16, 1);
+    v2.push_back(212);
+    auto iter = v2.begin();
+    for (; iter != v2.end(); ++iter) {
+        std::cout << *iter << std::endl;
+    }
     std::cout << v2.size() << std::endl;
 
-    sstl::vector<int*> v3;
 }
 
 void test_list() {
@@ -25,8 +29,8 @@ void test_list() {
 }
 
 int main() {
-    test_list();
-
+//    test_list();
+    test_vector();
     return 0;
 }
 
