@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "list.h"
 #include "hashtable.h"
+#include "hash_map"
 
 void test_vector() {
     sstl::vector<int> v1;
@@ -26,6 +27,10 @@ void test_list() {
     for (; l1iter != l1.end(); ++l1iter) {
         std::cout << *l1iter << std::endl;
     }
+}
+
+void test_hashmap() {
+
 }
 
 int main() {
