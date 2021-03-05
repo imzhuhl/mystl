@@ -4,6 +4,7 @@
 #include <iostream>
 #include "vector.h"
 #include "list.h"
+#include "hashtable.h"
 
 void test_vector() {
     sstl::vector<int> v1;
