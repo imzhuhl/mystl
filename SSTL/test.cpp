@@ -5,7 +5,7 @@
 #include "vector.h"
 #include "list.h"
 #include "hashtable.h"
-#include "hash_map"
+#include "hash_map.h"
 
 void test_vector() {
     sstl::vector<int> v1;
